@@ -1,0 +1,14 @@
+body {
+    background-color: white;
+}
+
+:root {
+    --primary-color: #CBCBD4;
+    --secondary-color: #303036;
+}
+
+.navbar-custom {
+    background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+@import "~bootstrap/scss/bootstrap";
