@@ -5,4 +5,11 @@
 {% block body %}
 <h1>Bienvenue</h1>
 <img src="{{ asset('images/test.jpg') }}" alt=""/>
+
+    <a href="{{ path('program_index') }}">
+        Les programmes
+    </a> <br>
+    <a href="{{ path('category_index') }}">
+        Les catégories
+    </a>
 {% endblock %}
