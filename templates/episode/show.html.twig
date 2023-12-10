@@ -23,6 +23,8 @@
                 <th>Synopsis</th>
                 <td>{{ episode.synopsis }}</td>
             </tr>
+            <a href="{{ path('app_episode_show', {'id': episode.id}) }}">show</a>
+            <a href="{{ path('app_episode_edit', {'id': episode.id}) }}">edit</a>
         </tbody>
     </table>
 
