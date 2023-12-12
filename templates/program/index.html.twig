@@ -10,12 +10,18 @@
             <p>{{ program.synopsis }}</p>
             {# Lien vers la fiche de la série : #}
             <a href="{{ path("program_show", { id: program.id }) }}">Voir la fiche</a>
+            <a href="{{ path('program_edit', { slug: program.slug }) }}" class="">Modifier</a>
+            <form method="post" action="{{ path('program_delete', {'slug': program.slug}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ program.id) }}">
+                <button class="">Supprimer</button>
+            </form>
         </div>
     {% else %}
         Aucune série trouvée.
     {% endfor %}
 
     <a href="{{ path('app_index') }}">
+        <a class="" href="{{ path('program_new') }}">Ajouter une nouvelle série </a>
         Retour à l'accueil
     </a>
 {% endblock %}
