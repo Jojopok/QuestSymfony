@@ -56,13 +56,13 @@
             ]);
         }
 
-        #[Route('/show/{id<^[0-9]+$>}', name: 'show')]
-        public function show(int $id, ProgramRepository $repository, ProgramDuration $programDuration): Response
+        #[Route('/show/{slug}', name: 'show')]
+        public function show(string $slug, ProgramRepository $repository, ProgramDuration $programDuration): Response
         {
-            $program = $repository->findOneBy(['id' => $id]);
+            $program = $repository->findOneBy(['slug' => $slug]);
 
             if (!$program) {
-                throw $this->createNotFoundException('No program with id: ' . $id . ' found in the program\'s table.');
+                throw $this->createNotFoundException('No program with id: ' . $slug . ' found in the program\'s table.');
             }
 
             return $this->render('program/show.html.twig', ['program' => $program,
