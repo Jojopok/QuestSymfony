@@ -33,6 +33,9 @@ class EpisodeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $slug = $slugger->slug($episode->getTitle())->lower();
+            $episode->setSlug($slug);
+
             $entityManager->persist($episode);
             $entityManager->flush();
 
@@ -55,13 +58,15 @@ class EpisodeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_episode_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Episode $episode, EntityManagerInterface $entityManager): Response
+    #[Route('/{slug}/edit', name: 'app_episode_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Episode $episode, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(EpisodeType::class, $episode);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugger->slug($episode->getTitle())->lower();
+            $episode->setSlug($slug);
             $entityManager->flush();
 
             $this->addFlash('success', 'Bravo ! L épisode a été modifé avec succès.');

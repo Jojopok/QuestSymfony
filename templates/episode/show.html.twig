@@ -23,14 +23,14 @@
                 <th>Synopsis</th>
                 <td>{{ episode.synopsis }}</td>
             </tr>
-            <a href="{{ path('app_episode_show', {'id': episode.id}) }}">show</a>
-            <a href="{{ path('app_episode_edit', {'id': episode.id}) }}">edit</a>
+            <a href="{{ path('app_episode_show', {slug: episode.slug}) }}">show</a>
+            <a href="{{ path('app_episode_edit', {slug: episode.slug}) }}">edit</a>
         </tbody>
     </table>
 
     <a href="{{ path('app_episode_index') }}">back to list</a>
 
-    <a href="{{ path('app_episode_edit', {'id': episode.id}) }}">edit</a>
+    <a href="{{ path('app_episode_edit', {slug: episode.slug}) }}">edit</a>
 
     {{ include('episode/_delete_form.html.twig') }}
 {% endblock %}

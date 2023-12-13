@@ -19,6 +19,8 @@
     use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
     use Symfony\Component\String\Slugger\SluggerInterface;
     use App\Service\ProgramDuration;
+    use App\Entity\Season;
+
 
     #[Route('/program', name: 'program_')]
     Class ProgramController extends AbstractController
@@ -65,26 +67,21 @@
                 throw $this->createNotFoundException('No program with id: ' . $slug . ' found in the program\'s table.');
             }
 
+            $duration = $programDuration->calculate($program);
+
             return $this->render('program/show.html.twig', ['program' => $program,
-                'programDuration' => $programDuration->calculate($program)]);
+                'programDuration' => $duration]);
         }
 
-        #[Route('/{programId}/seasons/{seasonId}', name: 'season_show')]
-        public function showSeason(int $programId, int $seasonId, ProgramRepository $programRepository, SeasonRepository $seasonRepository): Response
+        #[Route('/{slug}/season/{number}', name: 'season_show')]
+        public function showSeason( Program $program, Season $season, SluggerInterface $slugger): Response
         {
-            $program = $programRepository->findOneBy(['id' => $programId]);
-
-            if (!$program) {
-                throw $this->createNotFoundException('No program with id: ' . $programId . ' found in the program\'s table.');
-            }
-
-            $season = $seasonRepository->findOneBy(['id' => $seasonId, 'program' => $program]);
-
-            if (!$season) {
-                throw $this->createNotFoundException('No season found for the given program.');
-            }
-
-            return $this->render('program/season_show.html.twig', ['program' => $program, 'season' => $season]);
+            $slug = $slugger->slug($program->getTitle());
+            $program->setSlug($slug);
+            return $this->render('program/season_show.html.twig', [
+                'program' => $program,
+                'season' => $season,
+            ]);
         }
 
         #[Route('/edit/{slug}', name: 'edit', methods: ['GET', 'POST'])]

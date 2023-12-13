@@ -14,6 +14,8 @@
                     <li>
                         <h2>Episode : {{ episode.number }}/ {{ episode.title }}</h2>
                         <p>{{ episode.synopsis }}</p>
+                        <a href="{{ path('app_episode_show', {slug: episode.slug}) }}">show</a>
+                        <a href="{{ path('app_episode_edit', {slug: episode.slug}) }}">edit</a>
                     </li>
                 {% endfor %}
             </ul>
