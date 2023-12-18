@@ -22,17 +22,20 @@ class Program
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: 'Ne me laisse pas tout vide')]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'La catégorie saisie {{ value }} est trop longue, elle ne devrait pas dépasser {{ limit }} caractères',
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Il faut un synopsis')]
     #[Assert\Regex(
-        pattern: '/plus belle la vie/i',
+        pattern: '/plus belle la vie/',
+        message: 'On parle de vraies séries ici',
         match: false,
-        message: 'On parle de vraies séries ici.',
     )]
     private ?string $synopsis = null;
 
@@ -53,7 +56,6 @@ class Program
     private Collection $actors;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
     private ?string $slug = null;
 
     public function __construct()

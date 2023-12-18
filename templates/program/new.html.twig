@@ -3,6 +3,8 @@
 {% block body %}
     {{ form_start(form) }}
     {{ form_widget(form) }}
+    {{ form_errors(form) }}
+
     <button type="submit">Add Program</button>
     {{ form_end(form) }}
 {% endblock %}

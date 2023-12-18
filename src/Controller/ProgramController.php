@@ -20,6 +20,8 @@
     use Symfony\Component\String\Slugger\SluggerInterface;
     use App\Service\ProgramDuration;
     use App\Entity\Season;
+    use Symfony\Component\Mailer\MailerInterface;
+    use Symfony\Component\Mime\Email;
 
 
     #[Route('/program', name: 'program_')]
@@ -34,8 +36,8 @@
         }
 
 
-        #[Route('/new', name: 'new')]
-        public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+        #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
+        public function new(MailerInterface $mailer, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
         {
             $program = new Program();
             $form = $this->createForm(ProgramType::class, $program);
@@ -51,6 +53,19 @@
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Bravo ! La série a été créée avec succès.');
+
+                $email = (new Email())
+                    ->from($this->getParameter('mailer_from'))
+                    ->to($this->getParameter('mailer_from'))
+                    ->subject('Une nouvelle série vient d\'être publiée !')
+                    ->html($this->renderView('Program/newProgramEmail.html.twig', [
+                        'program' => $program,
+                    ]));
+
+                $mailer->send($email);
+
+                return $this->redirectToRoute('program_index');
+
             }
 
             return $this->render('program/new.html.twig', [
