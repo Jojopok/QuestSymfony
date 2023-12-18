@@ -9,8 +9,11 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
+#[Vich\Uploadable]
 #[UniqueEntity(
     fields: ['title'],
     message: 'ce titre existe déjà',
@@ -41,6 +44,9 @@ class Program
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $poster = null;
+    #[Vich\UploadableField(mapping: 'poster_file', fileNameProperty: 'poster')]
+    private ?File $posterFile = null;
+
 
 /*    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -62,6 +68,17 @@ class Program
     {
         $this->seasons = new ArrayCollection();
         $this->actors = new ArrayCollection();
+    }
+
+    public function setPosterFile(File $image = null): Program
+    {
+        $this->posterFile = $image;
+        return $this;
+    }
+
+    public function getPosterFile(): ?File
+    {
+        return $this->posterFile;
     }
     public function getId(): ?int
     {
