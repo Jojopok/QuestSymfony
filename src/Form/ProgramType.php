@@ -19,11 +19,9 @@ class ProgramType extends AbstractType
         $builder
             ->add('title')
             ->add('synopsis')
-            ->add('poster')
             ->add('category')
             ->add('title', TextType::class)
             ->add('synopsis', TextType::class)
-            ->add('poster', TextType::class)
             ->add('posterFile', VichFileType::class, [
                 'required'      => false,
                 'allow_delete'  => true,

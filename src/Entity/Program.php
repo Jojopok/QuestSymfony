@@ -3,21 +3,21 @@
 namespace App\Entity;
 
 use App\Repository\ProgramRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Entity\Actor;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
 #[Vich\Uploadable]
-#[UniqueEntity(
-    fields: ['title'],
-    message: 'ce titre existe déjà',
-)]
+#[UniqueEntity(fields:"title", message:"Ce titre existe déjà")]
 class Program
 {
     #[ORM\Id]
@@ -25,32 +25,33 @@ class Program
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message: 'Ne me laisse pas tout vide')]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: 'La catégorie saisie {{ value }} est trop longue, elle ne devrait pas dépasser {{ limit }} caractères',
-    )]
+    #[ORM\Column(name: 'title', type: 'string', length: 255, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Il faut un synopsis')]
+    #[Assert\NotBlank]
     #[Assert\Regex(
         pattern: '/plus belle la vie/',
-        message: 'On parle de vraies séries ici',
-        match: false,
+        message: "On parle de vraies séries ici",
+        match: false
     )]
     private ?string $synopsis = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $poster = null;
+
+//    #[ORM\ManyToOne]
+//    #[ORM\JoinColumn(nullable: false)]
+//    private ?Category $category = null;
+
     #[Vich\UploadableField(mapping: 'poster_file', fileNameProperty: 'poster')]
+    #[Assert\File(maxSize: '1M', mimeTypes: ['image/jpeg','image/jpg', 'image/png', 'image/webp'],)]
     private ?File $posterFile = null;
 
-
-/*    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Category $category = null;*/
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DatetimeInterface $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'programs')]
     private ?Category $category = null;
@@ -70,16 +71,6 @@ class Program
         $this->actors = new ArrayCollection();
     }
 
-    public function setPosterFile(File $image = null): Program
-    {
-        $this->posterFile = $image;
-        return $this;
-    }
-
-    public function getPosterFile(): ?File
-    {
-        return $this->posterFile;
-    }
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +112,31 @@ class Program
         return $this;
     }
 
+    public function setPosterFile(File $image = null): Program
+    {
+        $this->posterFile = $image;
+        if ($image) {
+            $this->updatedAt = new DateTime('now');
+        }
+        return $this;
+    }
+
+    public function getPosterFile() : ?File
+    {
+        return $this->posterFile;
+    }
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
     public function getCategory(): ?Category
     {
         return $this->category;
@@ -128,7 +144,7 @@ class Program
 
     public function setCategory(?Category $category): static
     {
-        $this->category = $category;
+        $this->category  = $category;
 
         return $this;
     }
@@ -159,7 +175,6 @@ class Program
                 $season->setProgram(null);
             }
         }
-
         return $this;
     }
 
@@ -175,6 +190,7 @@ class Program
     {
         if (!$this->actors->contains($actor)) {
             $this->actors->add($actor);
+//            $this->actors[] = $actor;
             $actor->addProgram($this);
         }
 
