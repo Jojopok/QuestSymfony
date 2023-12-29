@@ -46,17 +46,14 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Déconnexion</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">Mon profil</a>
                 </li>
             </ul>
             {% if app.user %}
                 {{ app.user.email }}
-                <a href="{{ path('app_logout') }}"> Se déconnecter</a>
+                <a class="nav-link" href="{{ path('app_logout') }}"> Se déconnecter</a>
             {% else %}
-                <a href="{{ path('login') }}"> Se connecter</a>
+                <a class="nav-link" href="{{ path('app_login') }}"> Se connecter</a>
             {% endif %}
         </div>
     </div>
