@@ -52,6 +52,12 @@
                     <a class="nav-link active" aria-current="page" href="#">Mon profil</a>
                 </li>
             </ul>
+            {% if app.user %}
+                {{ app.user.email }}
+                <a href="{{ path('app_logout') }}"> Se déconnecter</a>
+            {% else %}
+                <a href="{{ path('login') }}"> Se connecter</a>
+            {% endif %}
         </div>
     </div>
 </nav>
