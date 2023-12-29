@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\EpisodeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: EpisodeRepository::class)]
 class Episode
@@ -28,7 +28,7 @@ class Episode
     #[ORM\ManyToOne(inversedBy: 'episodes')]
     private ?Season $season = null;
 
-    #[ORM\Column]
+    #[ORM\Column()]
     private ?int $duration = null;
 
     #[ORM\Column(length: 255)]

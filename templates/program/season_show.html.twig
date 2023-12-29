@@ -3,28 +3,41 @@
 {% block title %}Saison #{{ season.number }}{% endblock %}
 
 {% block body %}
-    <div class="media-body">
-        <h1 class="mt-0"> Saison {{ season.number }} de {{ program.title }}</h1>
-        <p>{{ season.description }} de {{ program.title }}, est constituée de {{ season.episodes|length }} année de sortie : {{ season.year }}</p>
+    <div class="page zoom">
+        <div class="media">
+            <div class="media-body">
+                <h1 class="mt-0"> <a class="zoomLink" href="{{ path("program_show", { slug: program.slug }) }}"> Saison {{ season.number }}</a> de {{ program.title }}</h1>
+                <p>{{ program.title }}, est constituée de {{ season.episodes|length }} épisodes. </p>
+                <p>{{ season.description }}</p>
+                <p>Année de sortie : {{ season.year }}</p>
+                <a href="{{ path('app_season_edit', {'id': season.id}) }}"class="btn mt-3 btn-primary text-white ">Modifier</a>
+                {{ include('/season/_delete_form.html.twig') }}
 
-        {% if season.episodes|length > 0 %}
-            <h2>Liste des épisodes :</h2>
-            <ul>
-                {% for episode in season.episodes %}
-                    <li>
-                        <h2>Episode : {{ episode.number }}/ {{ episode.title }}</h2>
-                        <p>{{ episode.synopsis }}</p>
-                        <a href="{{ path('app_episode_show', {slug: episode.slug}) }}">show</a>
-                        <a href="{{ path('app_episode_edit', {slug: episode.slug}) }}">edit</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Aucun épisode disponible pour cette saison.</p>
-        {% endif %}
+                {% if season.episodes|length > 0 %}
+                    <div class="size box zoom">
+                        <h2>Liste des épisodes :</h2>
+                        <ul>
+                            {% for episode in season.episodes %}
+                                <li class="margeLi">
+                                    <h2><a class="zoomLink" href="{{ path('program_episode_show', {'slug': program.slug,'number': season.number, 'slugEpisode': episode.slug}) }}">Episode : {{ episode.number }}/ {{ episode.title }}</a></h2>
+                                    {#                                    <h2><a class="zoomLink" href="{{ path('program_episode_show', {'slug': program.slug,'number': season.number, 'episode': episode.id}) }}">Episode : {{ episode.number }}/ {{ episode.title }}</a></h2>#}
+                                    <p>{{ episode.synopsis }}</p>
+
+                                    <a href="{{ path('app_episode_edit', {'slug': episode.slug}) }}" class="btn mt-3 btn-primary text-white">Modifier</a>
+                                    {{ include('/episode/_delete_form.html.twig') }}
+
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p>Aucun épisode disponible pour cette saison.</p>
+                {% endif %}
+            </div>
+
+            <a href="{{ path('program_show', {'slug': program.slug}) }}">
+                Retour à la page de la série
+            </a>
+        </div>
     </div>
-
-    <a href="{{ path('program_show', {'slug': program.slug}) }}">
-        Retour à la page de la série
-    </a>
 {% endblock %}

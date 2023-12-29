@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -15,28 +15,48 @@ class Comment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $author = null;
-
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Episode $episode = null;
-
     #[ORM\Column(type: Types::TEXT)]
     private ?string $comment = null;
 
     #[ORM\Column]
-    #[Assert\Range(
-        min: 0,
-        max: 10,
-        notInRangeMessage: 'You must be between {{ min }}cm and {{ max }}cm tall to enter',
-    )]
     private ?int $rate = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    private ?User $author = null;
+
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    private ?Episode $episode = null;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(string $comment): static
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getRate(): ?int
+    {
+        return $this->rate;
+    }
+
+    public function setRate(int $rate): static
+    {
+        $this->rate = $rate;
+
+        return $this;
     }
 
     public function getAuthor(): ?User
@@ -63,26 +83,14 @@ class Comment
         return $this;
     }
 
-    public function getComment(): ?string
+    public function getCreatedAt(): \DateTimeInterface
     {
-        return $this->comment;
+        return $this->createdAt;
     }
 
-    public function setComment(string $comment): static
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
-        $this->comment = $comment;
-
-        return $this;
-    }
-
-    public function getRate(): ?int
-    {
-        return $this->rate;
-    }
-
-    public function setRate(int $rate): static
-    {
-        $this->rate = $rate;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
