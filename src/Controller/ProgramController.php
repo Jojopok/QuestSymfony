@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Actor;
+use App\Entity\User;
 use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Form\ProgramType;
@@ -55,6 +56,7 @@ Class ProgramController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugger->slug($program->getTitle());
             $program->setSlug($slug);
+            $program->setOwner($this->getUser());
             $entityManager->persist($program);
             $entityManager->flush();
 
@@ -162,6 +164,11 @@ Class ProgramController extends AbstractController
     {
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
+
+        if ($this->getUser() !== $program->getOwner()) {
+            // If not the owner, throws a 403 Access Denied exception
+            throw $this->createAccessDeniedException('Only the owner can edit the program!');
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugger->slug($program->getTitle());
