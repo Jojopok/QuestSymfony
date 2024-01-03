@@ -8,6 +8,7 @@
 		</title>
 		<link rel="icon" type="image/ico" href="{{ asset('build/images/fav.ico') }}">
 		{% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
 			{{ encore_entry_link_tags('app') }}
 		{% endblock %}
 		<header>
@@ -15,6 +16,7 @@
 		</header>
 
 		{% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
 	</head>

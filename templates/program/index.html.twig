@@ -2,26 +2,39 @@
 
 {% block title %}All programs{% endblock %}
 
-{% block body %}
-    <h1>Toutes les séries de la table program : </h1>
-    {% for program in programs %}
-        <div>
-            <h2>{{ loop.index }} / {{ program.title }} - Catégorie : {{ program.category.name }}</h2>
-            <p>{{ program.synopsis }}</p>
-            {# Lien vers la fiche de la série : #}
-            <a href="{{ path("program_show", { slug: program.slug }) }}">Voir la fiche</a>
-            <a href="{{ path('program_edit', { slug: program.slug }) }}" class="">Modifier</a>
-            <form method="post" action="{{ path('program_delete', {'slug': program.slug}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ program.id) }}">
-                <button class="">Supprimer</button>
-            </form>
-        </div>
-    {% else %}
-        Aucune série trouvée.
-    {% endfor %}
+{% block bodyClass %}class="other-pages"{% endblock %}
 
-    <a href="{{ path('app_index') }}">
-        <a class="" href="{{ path('program_new') }}">Ajouter une nouvelle série </a>
-        Retour à l'accueil
-    </a>
+{% block body %}
+    <div class="page zoom">
+
+        <h1>Toutes les séries : </h1>
+        {% for program in programs %}
+            <div class="size box zoom">
+                <h2><a class="zoomLink" href="{{ path("program_show", { slug: program.slug }) }}">{{ loop.index }} / {{ program.title }} - Catégorie : {{ program.category.name }}</a></h2>
+                <div class="sideBySide">
+                    <img class="align-self-start mr-3 " src="{{ vich_uploader_asset(program, 'posterFile')}}" alt="{{ program.title }} poster">
+                    <p class="m-3 ">synopsis : {{ program.synopsis }}</p>
+                </div>
+                <div class="sideBySide">
+                    <a href="{{ path('program_edit', { slug: program.slug }) }}" class="btn m-2 mt-2 btn-primary">Modifier</a>
+                    <form method="post" action="{{ path('program_delete', {'slug': program.slug}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ program.id) }}">
+                        <button class="btn m-2 mt-2 btn-primary">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            Aucune série trouvée.
+        {% endfor %}
+        <a class="zoomLink fs-5" href="{{ path('program_new') }}"> +add </a>
+        {#        <a class="zoomLink fs-5" href="{{ path('edit', { id: program.id }) }}" >Modifier</a>#}
+        {#        <a class="zoomLink fs-5" href="{{ path('delete', { id: program.id }) }}">Supprimer</a>#}
+
+
+        <div class="margeLi">
+            <a href="{{ path('app_index') }}">
+                Retour à l'accueil
+            </a>
+        </div>
+    </div>
 {% endblock %}
