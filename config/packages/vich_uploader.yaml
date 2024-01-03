@@ -1,11 +1,13 @@
 vich_uploader:
   db_driver: orm
-
   metadata:
     type: attribute
-
   mappings:
-  #        products:
-  #            uri_prefix: /images/products
-  #            upload_destination: '%kernel.project_dir%/public/images/products'
-  #            namer: Vich\UploaderBundle\Naming\SmartUniqueNamermappings:
+    poster_file:
+      uri_prefix: /uploads/images/posters
+      upload_destination: '%upload_directory%'
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+    actor_image:
+      uri_prefix: /uploads/images/actors
+      upload_destination: '%%upload_directory%'
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
