@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Actor;
+use App\Entity\User;
 use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Form\ProgramType;
@@ -25,6 +26,7 @@ use App\Entity\Season;
 use App\Entity\Episode;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Core\Security;
 //use Symfony\Component\Validator\Constraints\Email;
 
 
@@ -55,6 +57,7 @@ Class ProgramController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugger->slug($program->getTitle());
             $program->setSlug($slug);
+            $program->setOwner($this->getUser());
             $entityManager->persist($program);
             $entityManager->flush();
 
@@ -113,11 +116,6 @@ Class ProgramController extends AbstractController
                                 CommentRepository $commentRepository,
     ): Response
     {
-        //  $slug = $slugger->slug($program->getTitle());
-        // $program->setSlug($slug);
-
-//        $slugEpisode = $slugger->slug($episode->getTitle());
-//        $episode->setSlug($slugEpisode);
 
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
@@ -163,6 +161,11 @@ Class ProgramController extends AbstractController
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
 
+        if ($this->getUser() !== $program->getOwner()) {
+            // If not the owner, throws a 403 Access Denied exception
+            throw $this->createAccessDeniedException('Only the owner can edit the program!');
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugger->slug($program->getTitle());
             $program->setSlug($slug);
@@ -193,5 +196,23 @@ Class ProgramController extends AbstractController
 
         return $this->redirectToRoute('program_index' , [], Response::HTTP_SEE_OTHER);
     }
+    #[Route('/comment/{id}/delete', name: 'comment_delete', methods: ['POST'])]
+    public function deleteComment(Comment $comment, Security $security, EntityManagerInterface $entityManager): Response
+    {
+        // Vérifier si l'utilisateur a le droit de supprimer le commentaire
+        if (!($security->isGranted('ROLE_ADMIN') || ($security->isGranted('ROLE_CONTRIBUTOR') && $security->getUser() === $comment->getAuthor()))) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas le droit de supprimer ce commentaire.');
+        }
 
+        // Supprimer le commentaire de la base de données
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        // Ajouter un message flash de succès
+        $this->addFlash('success', 'Le commentaire a bien été supprimé.');
+
+        // Rediriger vers la page du programme associé à l'épisode
+        $programSlug = $comment->getEpisode()->getSeason()->getProgram()->getSlug();
+        return $this->redirectToRoute('program_show', ['slug' => $programSlug]);
+    }
 }

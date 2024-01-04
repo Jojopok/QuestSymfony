@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\User;
@@ -33,6 +34,7 @@ class UserFixtures extends Fixture
 
         $contributor->setPassword($hashedPassword);
         $manager->persist($contributor);
+        $this->addReference('contributor_user', $contributor);
 
         // Création d’un utilisateur de type “administrateur”
         $admin = new User();
@@ -44,6 +46,7 @@ class UserFixtures extends Fixture
         );
         $admin->setPassword($hashedPassword);
         $manager->persist($admin);
+        $this->addReference('admin_user', $admin);
 
         // Sauvegarde des 2 nouveaux utilisateurs :
         $manager->flush();
