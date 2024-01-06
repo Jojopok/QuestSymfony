@@ -2,27 +2,37 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
-class RegistrationController extends AbstractController
+
+class SecurityController extends AbstractController
 {
     private EmailVerifier $emailVerifier;
 
     public function __construct(EmailVerifier $emailVerifier)
     {
         $this->emailVerifier = $emailVerifier;
+    }
+
+    #[Route('/security', name: 'app_security')]
+    public function index(): Response
+    {
+        return $this->render('security/index.html.twig', [
+            'controller_name' => 'SecurityController',
+        ]);
     }
 
     #[Route('/register', name: 'app_register')]
@@ -47,14 +57,14 @@ class RegistrationController extends AbstractController
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
-                    ->from(new Address('zaiajonathan@gmail.com', 'Jonathan'))
+                    ->from(new Address('wilder@wildcodeschool.fr', 'Wild Series Bot'))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('security/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
 
-            return $this->redirectToRoute('app_index');
+            return $this->redirectToRoute('program_index');
         }
 
         return $this->render('security/register.html.twig', [
@@ -81,4 +91,13 @@ class RegistrationController extends AbstractController
 
         return $this->redirectToRoute('app_register');
     }
+
+    // Dans SecurityController.php ou un autre contrôleur approprié
+
+    #[Route('/my-profile', name: 'app_profile')]
+    public function profile(): Response
+    {
+        return $this->render('security/profile.html.twig');
+    }
+
 }
