@@ -20,7 +20,7 @@
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
 	</head>
-	<body>
+	<body {{ stimulus_controller('theme') }}>
 	{% for message in app.flashes('success') %}
 		<div class="alert alert-success">
 			{{ message }}
