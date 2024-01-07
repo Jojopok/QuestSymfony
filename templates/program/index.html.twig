@@ -8,6 +8,10 @@
     <div class="page zoom">
 
         <h1>Toutes les séries : </h1>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button>Search</button>
+        {{ form_end(form) }}
         {% for program in programs %}
             <div class="size box zoom">
                 <h2><a class="zoomLink" href="{{ path("program_show", { slug: program.slug }) }}">{{ loop.index }} / {{ program.title }} - Catégorie : {{ program.category.name }}</a></h2>

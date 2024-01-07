@@ -6,6 +6,7 @@ use App\Entity\Actor;
 use App\Entity\User;
 use App\Entity\Comment;
 use App\Form\CommentType;
+use App\Form\SearchProgramType;
 use App\Form\ProgramType;
 use App\Form\SeasonType;
 use App\Repository\CommentRepository;
@@ -35,14 +36,24 @@ Class ProgramController extends AbstractController
 {
 
     #[Route('/', name: 'index')]
-    public function index(ProgramRepository $programRepository): Response
-    {
-        $programs = $programRepository->findAll();
 
-        return $this->render(
-            'program/index.html.twig',
-            ['programs' => $programs]
-        );
+    public function index(Request $request, ProgramRepository $programRepository): Response
+    {
+        $form = $this->createForm(SearchProgramType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form->getData()['search'];
+            $programs = $programRepository->findLikeActorName($search);
+        } else {
+            $programs = $programRepository->findAll();
+        }
+
+
+        return $this->render('program/index.html.twig', [
+            'programs' => $programs,
+            'form' => $form,
+        ]);
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
